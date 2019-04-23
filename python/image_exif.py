@@ -1,6 +1,7 @@
 # =========================================================
 # Dependencies
 
+# Python 3.x https://sebastianraschka.com/Articles/2014_python_2_3_key_diff.html
 # pip install piexif
 # =========================================================
 
@@ -22,6 +23,12 @@ from datetime  import datetime, timedelta
 # =========================================================
 # Definitions
 # =========================================================
+
+class MyCam:
+    def __init__(self, exifname, nickname, timediff):
+        self.exifname = exifname
+        self.nickname = nickname
+        self.timediff = timediff
 
 ##### ----------------- printing all metadata from one file
 def print_all_file_info(fpath):
@@ -81,24 +88,38 @@ def create_file_name(fpath, num):
 
 
 
+# =========================================================
+# Configuration
+# =========================================================
+
+dirpath = os.getcwd()
+filetypes = ['.jpg','.jpeg', '.tiff', '.JPG', '.JPEG', '.TIFF']
+
+## Berlin 2016
+mycams = [MyCam("NIKON D5500", "_D55", timedelta(seconds=24,hours=8)), MyCam("SM-N920W8","_SNote", 0), MyCam("Canon PowerShot SX50 HS", "_SX50", timedelta(minutes=9, hours=7))]
+
 
 # =========================================================
 # main
 # =========================================================
 
 ## Step 1 List all files in current folder
-path = os.getcwd()
-print (path)
-files = os.listdir(path)
-print (files)
 
-i = 1
+print (dirpath)
+files = [ fn for fn in os.listdir(dirpath) if any(fn.endswith(ext) for ext in filetypes) ]
+#print (files)
+
+# i = 1
 for file in files:
-    pict = os.path.join(path, file)
+    pict = os.path.join(dirpath, file)
     print(pict)
     #newname = create_file_name(pict, i)
     #print ("new name " + newname)
     #i = i+1
     #print("####################### " + str(i))
     #os.rename(pict, os.path.join(path, newname))
-    
+
+
+for cam in mycams:
+    print(cam.exifname + " : " + cam.nickname)
+    print(cam.timediff)
