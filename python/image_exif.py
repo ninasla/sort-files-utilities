@@ -43,9 +43,21 @@ def print_file_info(fpath):
     print (exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal])
     print (exif_dict["0th"][piexif.ImageIFD.Model])
 
+##### ----------------- print camera information for cams listed in cams array 
+def print_mycams_info(cams):
+    for cam in cams:
+        print(cam.exifname + " : " + cam.nickname)
+        print(cam.timediff)
+
+##### ----------------- find cam in cams array by Exif name
+def find_cam_by_exifname(cams, camname):
+    for cam in cams:
+        if camname == cam.exifname:
+            return cam
+    return None
 
 ##### ----------------- create and print new name for test
-def create_file_name(fpath, num):
+def create_file_name(fpath, num, cams):
     exif_dict = piexif.load(fpath)
     print ("-------------------")
     datetime_str = exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal].decode("utf-8")
@@ -54,21 +66,26 @@ def create_file_name(fpath, num):
     fixed_datetime = datetime_object
     camera = exif_dict["0th"][piexif.ImageIFD.Model].decode("utf-8")
     print (camera)
-    if camera == "NIKON D5500":
-        model = "_D55"
-        fixed_datetime = datetime_object + timedelta(seconds=24,hours=8)
-    elif camera == "SM-N920W8":
-        model = "_SNote"
+    thecam = find_cam_by_exifname(cams, camera)
+    if thecam is not None:
+        model = thecam.nickname
+        fixed_datetime = datetime_object + thecam.timediff
+    #if camera == "NIKON D5500":
+        #model = "_D55"
+        #fixed_datetime = datetime_object + timedelta(seconds=24,hours=8)
+    #elif camera == "SM-N920W8":
+        #model = "_SNote"
         #fixed_datetime = datetime_object
-    elif camera == "Canon PowerShot SX50 HS": 
-        model = "_SX50"
-        fixed_datetime = datetime_object + timedelta(minutes=9, hours=7) 
+    #elif camera == "Canon PowerShot SX50 HS": 
+        #model = "_SX50"
+        #fixed_datetime = datetime_object + timedelta(minutes=9, hours=7) 
 		#, minutes=9
     print(fixed_datetime)
 
     filename = fixed_datetime.strftime("%Y-%m-%d_%H-%M-%S")
     #filename = (datetime_str.replace(":", "-")).replace(" ", "_")
     print (filename)
+    filename += "_"
     filename += model
     filename += "_"
     filename += str(num)
@@ -96,30 +113,36 @@ dirpath = os.getcwd()
 filetypes = ['.jpg','.jpeg', '.tiff', '.JPG', '.JPEG', '.TIFF']
 
 ## Berlin 2016
-mycams = [MyCam("NIKON D5500", "_D55", timedelta(seconds=24,hours=8)), MyCam("SM-N920W8","_SNote", 0), MyCam("Canon PowerShot SX50 HS", "_SX50", timedelta(minutes=9, hours=7))]
+#mycams = [MyCam("NIKON D5500", "D55", timedelta(seconds=24,hours=8)), MyCam("SM-N920W8","SNote", timedelta(0)), MyCam("Canon PowerShot SX50 HS", "SX50", timedelta(minutes=9, hours=7))]
+
+## Paris 2013
+mycams = [MyCam("Canon PowerShot SX160 IS", "SX160", timedelta(0)), MyCam("Canon PowerShot SX200 IS", "SX200", timedelta(0))]
 
 
 # =========================================================
 # main
 # =========================================================
 
+## print configuration data
+print ("########## SETUP DATA ##########")
+print (dirpath)
+print_mycams_info(mycams)
+print ("################################")
 ## Step 1 List all files in current folder
 
-print (dirpath)
+
 files = [ fn for fn in os.listdir(dirpath) if any(fn.endswith(ext) for ext in filetypes) ]
 #print (files)
 
-# i = 1
+i = 1
 for file in files:
     pict = os.path.join(dirpath, file)
     print(pict)
-    #newname = create_file_name(pict, i)
-    #print ("new name " + newname)
-    #i = i+1
-    #print("####################### " + str(i))
-    #os.rename(pict, os.path.join(path, newname))
+    print_file_info(pict)
+    newname = create_file_name(pict, i, mycams)
+    print ("------------- new name " + newname)
+    i = i+1
+    ####################### !!!!!! Next step will RENAME file
+    os.rename(pict, os.path.join(dirpath, newname))
 
 
-for cam in mycams:
-    print(cam.exifname + " : " + cam.nickname)
-    print(cam.timediff)
