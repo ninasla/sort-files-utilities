@@ -64,6 +64,7 @@ def create_file_name(fpath, num, cams):
     datetime_object = datetime.strptime(datetime_str, "%Y:%m:%d %H:%M:%S")
     print (datetime_object)
     fixed_datetime = datetime_object
+    model = "none"
     camera = exif_dict["0th"][piexif.ImageIFD.Model].decode("utf-8")
     print (camera)
     thecam = find_cam_by_exifname(cams, camera)
@@ -116,7 +117,7 @@ filetypes = ['.jpg','.jpeg', '.tiff', '.JPG', '.JPEG', '.TIFF']
 #mycams = [MyCam("NIKON D5500", "D55", timedelta(seconds=24,hours=8)), MyCam("SM-N920W8","SNote", timedelta(0)), MyCam("Canon PowerShot SX50 HS", "SX50", timedelta(minutes=9, hours=7))]
 
 ## Paris 2013
-mycams = [MyCam("Canon PowerShot SX160 IS", "SX160", timedelta(0)), MyCam("Canon PowerShot SX200 IS", "SX200", timedelta(0))]
+mycams = [MyCam("Canon PowerShot SX160 IS", "SX160", timedelta(hours=21)), MyCam("Canon PowerShot SX200 IS", "SX200", timedelta(hours=9))]
 
 
 # =========================================================
